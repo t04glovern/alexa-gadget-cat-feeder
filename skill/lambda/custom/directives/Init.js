@@ -5,7 +5,7 @@ module.exports = {
         return {
             type: 'CustomInterfaceController.SendDirective',
             header: {
-                name: 'StopBlink',
+                name: 'Init',
                 namespace: 'Custom.CatFeederGadget'
             },
             endpoint: {

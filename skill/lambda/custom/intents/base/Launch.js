@@ -1,6 +1,6 @@
 "use strict";
 
-const BlinkDirective = require('../../directives/Blink');
+const InitDirective = require('../../directives/Init');
 
 module.exports = {
     canHandle(handlerInput) {
@@ -34,8 +34,8 @@ module.exports = {
             return handlerInput.responseBuilder
                 .speak(handlerInput.t('WELCOME_MSG'))
                 .withShouldEndSession(false)
-                // Send the Blink directive to make the LED blink 20 seconds.
-                .addDirective(BlinkDirective.build(endpointId, 1000, 20, true))
+                // Send the init directive
+                .addDirective(InitDirective.build(endpointId))
                 .getResponse();
         }
         catch (err) {

@@ -17,6 +17,8 @@ const SessionEndedRequestHandler = require('./intents/base/SessionEnd');
 // Custom Intents
 const YesIntentHandler = require('./intents/YesFeed');
 const NoIntentHandler = require('./intents/NoFeed');
+const ReportFeederIntentHandler = require('./intents/ReportFeeder');
+const ExpiredFeederIntentHandler = require('./intents/ExpireFeeder');
 
 // This request interceptor will bind a translation function 't' to the handlerInput
 const LocalisationRequestInterceptor = {
@@ -31,12 +33,6 @@ const LocalisationRequestInterceptor = {
 };
 
 const skillBuilder = Alexa.SkillBuilders.custom();
-
-/**
- * This handler acts as the entry point for your skill, routing all request and response
- * payloads to the handlers above. Make sure any new handlers or interceptors you've
- * defined are included below. The order matters - they're processed top to bottom 
- * */
 exports.handler = skillBuilder
     .addRequestHandlers(
         CancelAndStopIntentHandler, // Base Intents
@@ -45,7 +41,9 @@ exports.handler = skillBuilder
         LaunchRequestHandler,
         SessionEndedRequestHandler,
         YesIntentHandler,           // Custom Intents
-        NoIntentHandler
+        NoIntentHandler,
+        ReportFeederIntentHandler,
+        ExpiredFeederIntentHandler
     )
     .addErrorHandlers(
         ErrorHandler

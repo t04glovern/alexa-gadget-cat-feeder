@@ -1,21 +1,17 @@
 "use strict";
 
 module.exports = {
-    build: function (endpointId, intervalMs, iterations, startFeeder) {
+    build: function (endpointId) {
         return {
             type: 'CustomInterfaceController.SendDirective',
             header: {
-                name: 'Blink',
+                name: 'Cleanup',
                 namespace: 'Custom.CatFeederGadget'
             },
             endpoint: {
                 endpointId: endpointId
             },
-            payload: {
-                intervalMs: intervalMs,
-                iterations: iterations,
-                startFeeder: startFeeder
-            }
+            payload: {}
         };
     }
 }

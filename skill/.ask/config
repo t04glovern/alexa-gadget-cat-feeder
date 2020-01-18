@@ -10,7 +10,7 @@
         },
         "interactionModel": {
           "en-US": {
-            "eTag": "f54f3e8916bb677ea6fd9756542a7a12"
+            "eTag": "97bccafb121977d4d8adefb6000be0a1"
           }
         },
         "lambda": [
@@ -23,7 +23,7 @@
             "codeUri": "lambda/custom",
             "functionName": "agt-cat-feeder-skill",
             "handler": "index.handler",
-            "revisionId": "5d27bd0e-f9e5-4d5f-8a79-6bf61087dec2",
+            "revisionId": "7060a685-1305-4cbb-95a6-391be8e64c43",
             "runtime": "nodejs10.x"
           }
         ]

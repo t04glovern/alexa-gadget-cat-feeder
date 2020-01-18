@@ -5,21 +5,22 @@ const CleanupDirective = require('../directives/Cleanup');
 module.exports = {
     canHandle(handlerInput) {
         let { request } = handlerInput.requestEnvelope;
-        let intentName = request.intent ? request.intent.name : '';
-        console.log("NoIntentHandler: checking if it can handle " +
-            request.type + " for " + intentName);
-        return request.intent && request.intent.name === 'AMAZON.NoIntent';
+        console.log("CustomEventHandler: checking if it can handle " + request.type);
+        return request.type === 'CustomInterfaceController.Expired';
     },
     handle(handlerInput) {
-        console.log("Received NoIntent..Exiting.");
+        console.log("== Custom Event Expiration Input ==");
+
+        let { request } = handlerInput.requestEnvelope;
+
         const attributesManager = handlerInput.attributesManager;
         let sessionAttributes = attributesManager.getSessionAttributes();
 
-        // Send Cleanup directive to cleanup I/O end skill session.
+        // When the EventHandler expires, cleanup and close feeder
         return handlerInput.responseBuilder
             .addDirective(CleanupDirective.build(sessionAttributes.endpointId))
-            .speak("Alright. Good bye!")
             .withShouldEndSession(true)
+            .speak(request.expirationPayload.data)
             .getResponse();
     }
 };
