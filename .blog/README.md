@@ -1,6 +1,78 @@
 # Alexa Gadget - Cat Feeder
 
-## Create Alexa Gadget Product
+When [Amazon Alexa](https://alexa.amazon.com) launched in 2014 as the first major home assistant platform I was captivated by the opportunities it offered someone like me. Clearly I wasn't alone either as over the coming years we saw a boom of new generation eletronics incorportating virtual assistants in their sales pitch.
+
+Now having voice assistant support is almost a must when launching any kind of home appliance, however this consumer demand is beginning to force hardware manufacurers to operate in a space that is very new and full of bad actors. Not all companies are technology first, so when their teams are asked to equip their white goods with internet capabilities there is a lot of room for error.
+
+This is why I believe Amazon Alexa Gadgets are a really big deal.
+
+---
+
+## What is a Gadget
+
+---
+
+To understand the difference between an Amazon Alexa supported device, and an Alexa Gadget, you should first understand how most companies would approach building a smart assistant enabled device currently
+
+![Alexa Smart Assistant](img/alexa-skill.png)
+
+The architecture above is what you would usually see if the goal was to simply incorporate home assistant functionality.
+
+1. Device registered, associated with a user. Stored in DynamoDB.
+2. Call made to Alexa skill service.
+3. Skill calls out to Lambda providing a unique identifier to lookup what device should have what actions performed.
+4. Device is controlled over MQTT.
+
+The problem with this architecture is it relies on understanding a number of (potentially very new) services to tie everything together. While there is nothing inheritely wrong with the design, it leaves room for error.
+
+Alexa Gadgets on the otherhand are meant as simple companions to exist Alexa devices.
+
+![Alexa Smart Assistant Gadget architecture](img/alexa-gadget.png)
+
+If the goal for your product is to simply give it Alexa support then the design above is both simplier and less prone to security holes.
+
+1. Device is paired with Echo (or any other Alexa bluetooth device).
+2. Device recieves events over Bluetooth messages when skills are invoked.
+3. Device can react & respond through the Alexa device.
+
+---
+
+## Building a Gadget
+
+---
+
+So you want to learn how to build a gadget? Well hopefully I can help demystifiy the process for you while we build something fun! We will be building an Alexa controlled cat feeder that is going to be controlled entirely through the Alexa Gadget interface.
+
+### Content
+
+---
+
+* Alexa Gadget **Product Creation**
+* Alexa Gadget **Device Setup & Registration**
+* **Gadget Code** Overview
+* Cat Feeder **Gadget Code**
+* Cat Feeder **Alexa Skill Deployment**
+* **Electronics Setup** [Optional]
+
+### Requirements
+
+---
+
+* **Raspberry Pi 3 B+**: or another bluetooth microcontroller.
+* **AWS Account**: [Create one if you need one](https://console.aws.amazon.com/console/home).
+* **Amazon Developer account**: [create one here](https://developer.amazon.com/alexa) if you haven't already got one.
+* *Optional*:
+  * **3-wire servo**: To control cat feeder opening.
+  * **RGB LED**: display status when skill is in use.
+  * **Assortment of wires**: to wire!
+
+**NOTE**: *While you might need to follow all steps to get a working cat feeder, they aren't necessary if you just want to learn. You can still setup a gadget (in our case a Raspberry Pi) to recieve events from Alexa!*
+
+---
+
+### Alexa Gadget Product Creation
+
+---
 
 To start with we will need to create a new Alexa Voice Service Gadget by heading over to the [products portal](https://developer.amazon.com/alexa/console/avs/products). Click **Create Product** to begin.
 
@@ -27,7 +99,11 @@ Once created, select your new product and take down the following information fr
 
 Keep this information safe as we'll be using it in the next step when we setup the Raspberry Pi.
 
-## Register Raspberry Pi Gadget
+---
+
+### Alexa Gadget Device Setup & Registration
+
+---
 
 In this step we will configure our Raspberry Pi as a registered Alexa Gadget. This process will require you to have the following pre-setup.
 
@@ -66,7 +142,7 @@ sudo python3 launch.py --setup
 # |   'Y8bb,ood8P'    'Y888888o  888o 'Y8bod8P' o88'   888o 'Y888888o  |
 # +--------------------------------------------------------------------+
 
-# Do you want to configure all examples with your Alexa Gadget credentials (y/n)? 
+# Do you want to configure all examples with your Alexa Gadget credentials (y/n)?
 y
 
 # Enter the Amazon ID for your gadget:
@@ -97,4 +173,87 @@ ble
 # +------------------------------+
 # |            SUCCESS           |
 # +------------------------------+
+```
+
+Congratulations! You've finished setting up the Alexa Gadget device. We can now move onto writing code to handle Alexa invocations.
+
+---
+
+### Gadget Code Explained
+
+---
+
+Okay, so you have a Raspberry Pi ready to become a gadget, but we still don't understand how Gadgets work. Let's dive into how we can structure a simple one.
+
+At the heart of any Gadget project is the following folder and two files. For the sake of simpliciy, put this folder along side the other examples in [alexa/Alexa-Gadgets-Raspberry-Pi-Samples](https://github.com/alexa/Alexa-Gadgets-Raspberry-Pi-Samples).
+
+```bash
+|-- Alexa-Gadgets-Raspberry-Pi-Samples/src/examples
+    |-- project_name
+        |-- project_name.ini
+        |-- project_name.py
+```
+
+* **project_name.ini**: Defines gadget details and permission scope
+* **project_name.py**: Code that runs and interacts with Alexa over Bluetooth
+
+#### project_name.ini
+
+The project `.ini` file will contain the Amazon ID and Secret that you retrieved from the product creation step above; along with a set of capabilties.
+
+```bash
+[GadgetSettings]
+amazonId = A30XXXXXXXXXXX
+alexaGadgetSecret = 4B4DXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+[GadgetCapabilities]
+Notifications = 1.0
+```
+
+Each capability will expose a different event to the custom code you write later on in the `.py` file. It will make more sense in a second.
+
+#### project_name.py
+
+Below is a blank template for the capability file above. The functions defined below will be triggered when alexa receives each of the capabilies we subscribed to above.
+
+```python
+import logging
+import sys
+
+from agt import AlexaGadget
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logger = logging.getLogger(__name__)
+logging.getLogger('agt.alexa_gadget').setLevel(logging.DEBUG)
+
+class ProjectNameGadget(AlexaGadget):
+
+    def on_notifications_setindicator(self, directive):
+        pass
+
+    def on_notifications_clearindicator(self, directive):
+        pass
+
+if __name__ == '__main__':
+    ProjectNameGadget().main()
+```
+
+An example might be that we would like to run some custom code to switch on an LED whenever an alarm finishes ringing. For this we could add some code to the `on_notifications_clearindicator` function like so
+
+```python
+...
+    def on_notifications_setindicator(self, directive):
+        RGB_LED.color = Color('red')
+
+    def on_notifications_clearindicator(self, directive):
+        RGB_LED.color = Color('green')
+...
+```
+
+**NOTE**: *For information on other Gadget capabilities, [refer to the offical documentation](https://developer.amazon.com/en-US/docs/alexa/alexa-gadgets-toolkit/features.html).*
+
+When you are ready to deploy the Gadget code and test functionality, run the following from the root folder inside [alexa/Alexa-Gadgets-Raspberry-Pi-Samples](https://github.com/alexa/Alexa-Gadgets-Raspberry-Pi-Samples).
+
+```bash
+sudo python3 launch.py --example project_name
 ```
