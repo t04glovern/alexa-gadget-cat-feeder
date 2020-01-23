@@ -257,3 +257,71 @@ When you are ready to deploy the Gadget code and test functionality, run the fol
 ```bash
 sudo python3 launch.py --example project_name
 ```
+
+#### Custom Directives
+
+The final thing you will need to understand before looking at the cat feeder code is custom directives. These are similar to the capabilities above however instead of them coming from general alexa interactions, they are custom and fire into a user defined **namespace**.
+
+An example would best be illustrated by first looking at how the normal directives function. Below is the payload that is captured when a notification comes through
+
+```json
+{
+    "header":{
+        "namespace":"Notifications",
+        "name":"ClearIndicator",
+        "messageId":"",
+        "dialogRequestId":""
+    },
+    "payload":{
+
+    }
+}
+```
+
+See how the namespace `Notifications` matches the gadget capability we defined in the `project_name.ini` file. This means that we are able to define custom capabilities which become a namespace that can be utilized by our `project_name.py` code.
+
+For example, lets use the example we'll also use later on called `CatFeederGadget`
+
+```bash
+[GadgetCapabilities]
+Custom.CatFeederGadget = 1.0
+```
+
+We can now create functions in the code to handle any custom directives we'd like in the python code.
+
+```python
+# `CleanUp` function
+def on_custom_catfeedergadget_cleanup(self, directive):
+    pass
+# `FeedCat` function
+def on_custom_catfeedergadget_feedcat(self, directive):
+    pass
+```
+
+When writing skill code later on we will be able to trigger these directives, or pass data to them by sending a json payload like below
+
+```json
+{
+    "type": "CustomInterfaceController.SendDirective",
+    "header": {
+        "name": "FeedCat",
+        "namespace": "Custom.CatFeederGadget"
+    },
+    "endpoint": {
+        "endpointId": "<endpointId>"
+    },
+    "payload": {}
+}
+```
+
+**NOTE**: *Some of the information above might now quite make sense yet, but once we've linked all the skill code and gadget code together it will start to become clear.*
+
+---
+
+### Cat Feeder Gadget Code
+
+---
+
+Now that you have a basic understanding of how Gadget code works we can begin to design our cat feeder. Below is the design for how the Alexa skill will operate once completed.
+
+![Alexa Skill Pipeline](img/alexa-pipeline.png)
