@@ -55,7 +55,6 @@ class CatFeederGadget(AlexaGadget):
         """
         Handles Custom.CatFeederGadget.FeedCat directive sent from skill
         """
-        RGB_LED.color = Color('blue')
 
         # Set angle of servo to 0 degrees
         SERVO.angle = 0

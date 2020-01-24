@@ -324,4 +324,230 @@ When writing skill code later on we will be able to trigger these directives, or
 
 Now that you have a basic understanding of how Gadget code works we can begin to design our cat feeder. Below is the design for how the Alexa skill will operate once completed.
 
-![Alexa Skill Pipeline](img/alexa-pipeline.png)
+![Alexa Skill Pipeline (Gadget)](img/pipeline-gadget.png)
+
+For this section we'll focus on the pieces marked with the Raspberry Pi icon. These are our custom directives that we will define in the `CatFeederGadget` namespace.
+
+**NOTE**: *The complete code for this seciton is available in [t04glovern/alexa-gadget-cat-feeder/alexa-gadget-cat-feeder.py](../alexa-gadget-cat-feeder.py). Below are just the directives, therefore you will still need the full code in order for this to function.*
+
+#### CatFeederGadget.Init
+
+Goals for this directive are to reset the state of the cat feeder; which is done by calling a helper function called `_reset_feeder()`. The feeder should then light up the LED blue indicating that an action is about to be performed via Alexa.
+
+```python
+def on_custom_catfeedergadget_init(self, directive):
+    """
+    Handles Custom.CatFeederGadget.Init directive sent from skill
+    """
+    self._reset_feeder()
+
+    # Turn on the LED
+    RGB_LED.color = Color('blue')
+    RGB_LED.on()
+```
+
+#### CatFeederGadget.FeedCat
+
+The FeedCat directive is responsible for handling what should happen when a user wants to trigger the cat feeders primary function. This rotates a servo to an open position so that food can enter the cat dish.
+
+Finally we use an important feature of Gadgets called custom events. These are a way to craft events similar to what we receieve as a gadget on custom topics. In or case we want to be able to notify our Alexa sksill of the fact that the cat feeder was able to perform its servo action.
+
+In the next section you will see the `CatFeederGadget.ReportFeeder` event be handled in our Alexa skill.
+
+```python
+def on_custom_catfeedergadget_feedcat(self, directive):
+    """
+    Handles Custom.CatFeederGadget.FeedCat directive sent from skill
+    """
+
+    # Set angle of servo to 0 degrees
+    SERVO.angle = 0
+    time.sleep(1)
+    SERVO.detach()
+
+    payload = {'feed': True}
+    self.send_custom_event(
+        'Custom.CatFeederGadget', 'ReportFeeder', payload)
+```
+
+#### CatFeederGadget.Cleanup
+
+Finally we have a directive to reset the state of the cat feeder. This is purely a wrapper for the aformentioned `_reset_feeder()`.
+
+```python
+def on_custom_catfeedergadget_cleanup(self, directive):
+    """
+    Handles Custom.CatFeederGadget.Cleanup directive sent from skill
+    """
+    self._reset_feeder()
+```
+
+---
+
+### Cat Feeder Alexa Skill Deployment
+
+---
+
+With the Gadget code deployed we are able to move onto the Alexa Skill portion of this project. The intents that we need to define are labeled with the Alexa icon in the diagram below.
+
+![Alexa Skill Pipeline (Skill)](img/pipeline-skill.png)
+
+---
+
+***In the interest of time** We’re not going to be going over each and every line of code for this project. Instead I recommend you copying across the contents of this project and following along with the guide.*
+
+*If you’re really keen to learn and understand what each line of code does, I highly recommend checking out my course [Alexa Skills Kit: Practical Chatbot Development](https://devopstar.com/courses/alexa-skills-kit-practical-chatbot-development/).*
+
+---
+
+#### Launch Intent
+
+The code within the `Launch` intent is responsibile for checking if the incoming request has an Alexa device with a Gadget attached. If so it takes the endpoint identifier and stores it in the session attributes.
+
+Then we can see where we fire off our very first custom directive. These are the events that get captured and acted on by our Gadget from the previous section.
+
+```javascript
+...
+    let endpointId = response.endpoints[0].endpointId;
+
+    // Store endpointId for using it to send custom directives later.
+    console.log("Received endpoints. Storing Endpoint Id: " + endpointId);
+    const attributesManager = handlerInput.attributesManager;
+    let sessionAttributes = attributesManager.getSessionAttributes();
+    sessionAttributes.endpointId = endpointId;
+    attributesManager.setSessionAttributes(sessionAttributes);
+
+    return handlerInput.responseBuilder
+        .speak(handlerInput.t('WELCOME_MSG'))
+        .withShouldEndSession(false)
+        // Send the init directive
+        .addDirective(InitDirective.build(endpointId))
+        .getResponse();
+...
+```
+
+Taking a quick look at the directive structure that is being send, you will see that it's very straighforward and follows a standard JSON format. The example below is from the [Init.js example in lambda/custom/directives](../skill/lambda/custom/directives/Init.js)
+
+```javascript
+"use strict";
+
+module.exports = {
+    build: function (endpointId) {
+        return {
+            type: 'CustomInterfaceController.SendDirective',
+            header: {
+                name: 'Init',
+                namespace: 'Custom.CatFeederGadget'
+            },
+            endpoint: {
+                endpointId: endpointId
+            },
+            payload: {}
+        };
+    }
+}
+```
+
+#### No Intent
+
+The `No` intent is very similar to the launch intent, however it calls the aformentioned Cleanup directive
+
+```javascript
+...
+    // Send Cleanup directive to cleanup I/O end skill session.
+    return handlerInput.responseBuilder
+        .addDirective(CleanupDirective.build(sessionAttributes.endpointId))
+        .speak("Alright. Good bye!")
+        .withShouldEndSession(true)
+        .getResponse();
+...
+```
+
+#### Yes Intent
+
+The `Yes` intent is where things get interesting as we need to setup a listener to have Alexa wait for a reply from the feeder. The `StartEventHandlerDirective` is used for this and defines that ReportFeeder event that we used in our Gadget code as the source to listen to.
+
+A timeout and custom response in the event that the directive is no fullfilled must also be defined.
+
+```javascript
+...
+    // Create a token to be assigned to the EventHandler and store it
+    // in session attributes for stopping the EventHandler later.
+    sessionAttributes.token = Uuid();
+    attributesManager.setSessionAttributes(sessionAttributes);
+
+    console.log("YesIntent received. Starting feeder.");
+
+    return handlerInput.responseBuilder
+        // Send the FeedCatDirective to trigger the feeder.
+        .addDirective(FeedCatDirective.build(endpointId))
+        // Start a EventHandler for 10 seconds to receive only one
+        // 'Custom.CatFeederGadget.ReportFeeder' event and terminate.
+        .addDirective(StartEventHandlerDirective.build(sessionAttributes.token, 10000,
+            'Custom.CatFeederGadget', 'ReportFeeder', 'SEND_AND_TERMINATE',
+            { 'data': "You didn't report a feed took place. Good bye!" }))
+        .getResponse();
+...
+```
+
+#### ReportFeeder Intent
+
+While this is not necessarily an Intent, it is structured and caught in a similar manner to other intents in the Alexa Skill lifecycle. There's a few pieces to this intent that I'll break down individually
+
+Since we don't want any random Intent to be triggering our ReportFeeder directive we extract the session attribute for the token provided in the `StartEventHandlerDirective` from the previous step. Thi ensure that only the Gadget that initialised the feeder will be able to close out the Gadget lifecycle.
+
+```javascript
+...
+    // Validate eventHandler token
+    if (sessionAttributes.token !== request.token) {
+        console.log("EventHandler token doesn't match. Ignoring this event.");
+        return handlerInput.responseBuilder
+            .speak("EventHandler token doesn't match. Ignoring this event.")
+            .getResponse();
+    }
+...
+```
+
+The second half deals with the outcome from the `ReportFeeder` event. If you recall back to the python code we sent a JSON payload indicating that `{ feed: true }` when the feeder runs. This payload is what determines if we alert the user to the fact that the feeder worked as intended. Alternatively if we don't get a valid payload, the user is alerted to a possible I/O issue.
+
+**NOTE**: *The cleanup directive is also fired after each of the outcomes.*
+
+```javascript
+...
+    if (namespace === 'Custom.CatFeederGadget' && name === 'ReportFeeder') {
+        // On receipt of 'Custom.CatFeederGadget.ReportFeeder' event, check success
+        // then end the skill session
+        if (payload.feed) {
+            return response.speak('Cat has been fed, Meow!')
+                .addDirective(CleanupDirective.build(sessionAttributes.endpointId))
+                .withShouldEndSession(true)
+                .getResponse();
+        } else {
+            return response.speak('Feeder encountered an error responding. Check the gadget device and I/O')
+                .addDirective(CleanupDirective.build(sessionAttributes.endpointId))
+                .withShouldEndSession(true)
+                .getResponse();
+        }
+
+    }
+    return response;
+...
+```
+
+#### Other
+
+There are a number of other directives and intents not mentioned above due to time. The are summiarized below:
+
+* [StartEventHandler](../skill/lambda/custom/directives/StartEventHandler.js) - Definition for the timed event
+* [StopFeeder](../skill/lambda/custom/directives/StopFeeder.js) - Handles failures or stopped skill to disconnect from the Gadget
+* [ExpireFeeder](../skill/lambda/custom/intents/ExpireFeeder.js) - If a token expires or times out then the Gadget is cleaned up.
+
+---
+
+### Electronics Setup (Optional)
+
+---
+
+The final section is optional for anyone who actually wants to build the functioning feeder. The circuit diagram for the three main parts can be seen below, and you can assume resistors are 220Ω
+
+![Alexa Cat Feeder Schematic](img/alexa-cat-feeder-schematic.png)
