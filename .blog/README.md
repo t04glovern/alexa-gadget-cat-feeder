@@ -1,8 +1,8 @@
 # Alexa Gadget - Cat Feeder
 
-When [Amazon Alexa](https://alexa.amazon.com) launched in 2014 as the first major home assistant platform I was captivated by the opportunities it offered someone like me. Clearly I wasn't alone either as over the coming years we saw a boom of new generation eletronics incorportating virtual assistants in their sales pitch.
+When [Amazon Alexa](https://alexa.amazon.com) launched in 2014 as the first major home assistant platform I was captivated by the opportunities it offered someone like me. Clearly I wasn't alone either as over the coming years we saw a boom of new generation electronics incorporating virtual assistants in their sales pitch.
 
-Now having voice assistant support is almost a must when launching any kind of home appliance, however this consumer demand is beginning to force hardware manufacurers to operate in a space that is very new and full of bad actors. Not all companies are technology first, so when their teams are asked to equip their white goods with internet capabilities there is a lot of room for error. **This is why I believe Amazon Alexa Gadgets are a really big deal**.
+Now having voice assistant support is almost a must when launching any kind of home appliance, however this consumer demand is beginning to force hardware manufacturers to operate in a space that is very new and full of bad actors. Not all companies are technology first, so when their teams are asked to equip their white goods with internet capabilities there is a lot of room for error. **This is why I believe Amazon Alexa Gadgets are a really big deal**.
 
 By the end of this article you will have everything you need to build your own gadget by using source code I've provided to build this simple Alexa powered cat feeder.
 
@@ -14,9 +14,9 @@ By the end of this article you will have everything you need to build your own g
 
 ---
 
-To understand the difference between an Amazon Alexa supported device, and an Alexa Gadget, you should first understand how most companies would approach building a smart assistant enabled device currently
+To understand the difference between an Amazon Alexa supported device, and an Alexa Gadget, you should first understand how most companies would approach building a smart assistant enabled device currently.
 
-![Alexa Smart Assistant](img/alexa-skill.png)
+![Alexa Smart Assistant Traditional Design](img/alexa-skill.png)
 
 The architecture above is what you would usually see if the goal was to simply incorporate home assistant functionality.
 
@@ -25,13 +25,13 @@ The architecture above is what you would usually see if the goal was to simply i
 3. Skill calls out to Lambda providing a unique identifier to lookup what device should have what actions performed.
 4. Device is controlled over MQTT.
 
-The problem with this architecture is it relies on understanding a number of (potentially very new) services to tie everything together. While there is nothing inheritely wrong with the design, it leaves room for error.
+The problem with this architecture is it relies on understanding a number of (potentially very new) services to tie everything together. While there is nothing inherently wrong with the design, it leaves room for error.
 
-Alexa Gadgets on the otherhand are meant as simple companions to exist Alexa devices.
+Alexa Gadgets on the other-hand are meant as simple companions to exist Alexa devices.
 
 ![Alexa Smart Assistant Gadget architecture](img/alexa-gadget.png)
 
-If the goal for your product is to simply give it Alexa support then the design above is both simplier and less prone to security holes.
+If the goal for your product is to simply give it Alexa support then the design above is both simpler and less prone to security holes.
 
 1. Device is paired with Echo (or any other Alexa bluetooth device).
 2. Device recieves events over Bluetooth messages when skills are invoked.
@@ -43,7 +43,7 @@ If the goal for your product is to simply give it Alexa support then the design 
 
 ---
 
-So you want to learn how to build a gadget? Well hopefully I can help demystifiy the process for you while we build something fun! We will be building an Alexa controlled cat feeder that is going to be controlled entirely through the Alexa Gadget interface.
+So you want to learn how to build a gadget? Well hopefully I can help demystify the process for you while we build something fun! We will be building an Alexa controlled cat feeder that is going to be controlled entirely through the Alexa Gadget interface.
 
 ### Content
 
@@ -68,7 +68,7 @@ So you want to learn how to build a gadget? Well hopefully I can help demystifiy
   * **RGB LED**: display status when skill is in use.
   * **Assortment of wires**: to wire!
 
-**NOTE**: *While you might need to follow all steps to get a working cat feeder, they aren't necessary if you just want to learn. You can still setup a gadget (in our case a Raspberry Pi) to recieve events from Alexa!*
+**NOTE**: *While you might need to follow all steps to get a working cat feeder, they aren't necessary if you just want to learn. You can still setup a gadget (in our case a Raspberry Pi) to receive events from Alexa!*
 
 ---
 
@@ -160,14 +160,14 @@ The process will go through and install / configure all the dependencies needed 
 * Bluetooth (Low Energy)
 * Python GPIO lib
 
-***NOTE**: During the instllation you will be prompted to agree with the Terms and Conditions of the `bluez` package. you can do this by typing **AGREE** when asked to*
+***NOTE**: During the installation you will be prompted to agree with the Terms and Conditions of the `bluez` package. you can do this by typing **AGREE** when asked to*
 
 ```bash
 # The Alexa Gadgets Raspberry Pi launch script provided herein will retrieve the 'Bluez-5.50' package at install-time from third-party sources. There are terms and conditions that you need to agree to abide by if you choose to install the 'Bluez-5.50' package (https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/COPYING?h=5.50). This script will also enable you to modify and install the 'bluez-5.50' package to enable notification callbacks after reconnections to a paired Echo device. This is required for communication between your gadget and the Echo device over BLE. If you do not agree with every term and condition associated with 'Bluez-5.50', enter 'QUIT', else enter 'AGREE'.
 AGREE
 ```
 
-The last thing you will be asked is if you would like to run the communication transport in BT (Classic Bluetooth) or BLE (Bluetooth Low Energy) mode. Depedending on what Alexa device you have will dictact which mode to choose. [Here's a helpful list](https://developer.amazon.com/en-US/docs/alexa/alexa-gadgets-toolkit/understand-alexa-gadgets-toolkit.html#devices) of devices and their support you can refer to.
+The last thing you will be asked is if you would like to run the communication transport in BT (Classic Bluetooth) or BLE (Bluetooth Low Energy) mode. Depending on what Alexa device you have will dictate which mode to choose. [Here's a helpful list](https://developer.amazon.com/en-US/docs/alexa/alexa-gadgets-toolkit/understand-alexa-gadgets-toolkit.html#devices) of devices and their support you can refer to.
 
 ```bash
 # Which transport mode would you like to configure your gadget for (ble/bt)?
@@ -187,7 +187,7 @@ Congratulations! You've finished setting up the Alexa Gadget device. We can now 
 
 Okay, so you have a Raspberry Pi ready to become a gadget, but we still don't understand how Gadgets work. Let's dive into how we can structure a simple one.
 
-At the heart of any Gadget project is the following folder and two files. For the sake of simpliciy, put this folder along side the other examples in [alexa/Alexa-Gadgets-Raspberry-Pi-Samples](https://github.com/alexa/Alexa-Gadgets-Raspberry-Pi-Samples).
+At the heart of any Gadget project is the following folder and two files. For the sake of simplicity, put this folder along side the other examples in [alexa/Alexa-Gadgets-Raspberry-Pi-Samples](https://github.com/alexa/Alexa-Gadgets-Raspberry-Pi-Samples).
 
 ```bash
 |-- Alexa-Gadgets-Raspberry-Pi-Samples/src/examples
@@ -201,7 +201,7 @@ At the heart of any Gadget project is the following folder and two files. For th
 
 #### project_name.ini
 
-The project `.ini` file will contain the Amazon ID and Secret that you retrieved from the product creation step above; along with a set of capabilties.
+The project `.ini` file will contain the Amazon ID and Secret that you retrieved from the product creation step above; along with a set of capabilities.
 
 ```bash
 [GadgetSettings]
@@ -216,7 +216,7 @@ Each capability will expose a different event to the custom code you write later
 
 #### project_name.py
 
-Below is a blank template for the capability file above. The functions defined below will be triggered when alexa receives each of the capabilies we subscribed to above.
+Below is a blank template for the capability file above. The functions defined below will be triggered when Alexa receives each of the capabilities we subscribed too above.
 
 ```python
 import logging
@@ -240,7 +240,7 @@ if __name__ == '__main__':
     ProjectNameGadget().main()
 ```
 
-An example might be that we would like to run some custom code to switch on an LED whenever an alarm finishes ringing. For this we could add some code to the `on_notifications_clearindicator` function like so
+An example might be that we would like to run some custom code to switch on an LED whenever an alarm finishes ringing. For this we could add some code to the `on_notifications_clearindicator` function like so.
 
 ```python
 ...
@@ -262,9 +262,9 @@ sudo python3 launch.py --example project_name
 
 #### Custom Directives
 
-The final thing you will need to understand before looking at the cat feeder code is custom directives. These are similar to the capabilities above however instead of them coming from general alexa interactions, they are custom and fire into a user defined **namespace**.
+The final thing you will need to understand before looking at the cat feeder code is custom directives. These are similar to the capabilities above however instead of them coming from general Alexa interactions, they are custom and fire into a user defined **namespace**.
 
-An example would best be illustrated by first looking at how the normal directives function. Below is the payload that is captured when a notification comes through
+An example would best be illustrated by first looking at how the normal directives function. Below is the payload that is captured when a notification comes through.
 
 ```json
 {
@@ -280,9 +280,9 @@ An example would best be illustrated by first looking at how the normal directiv
 }
 ```
 
-See how the namespace `Notifications` matches the gadget capability we defined in the `project_name.ini` file. This means that we are able to define custom capabilities which become a namespace that can be utilized by our `project_name.py` code.
+See how the namespace `Notifications` matches the gadget capability we defined in the `project_name.ini` file. This means that we are able to define custom capabilities which become a namespace that can be utilised by our `project_name.py` code.
 
-For example, lets use the example we'll also use later on called `CatFeederGadget`
+For example, lets use the example we'll also use later on called `CatFeederGadget`.
 
 ```bash
 [GadgetCapabilities]
@@ -300,7 +300,7 @@ def on_custom_catfeedergadget_feedcat(self, directive):
     pass
 ```
 
-When writing skill code later on we will be able to trigger these directives, or pass data to them by sending a json payload like below
+When writing skill code later on we will be able to trigger these directives, or pass data to them by sending a json payload like below.
 
 ```json
 {
@@ -330,7 +330,7 @@ Now that you have a basic understanding of how Gadget code works we can begin to
 
 For this section we'll focus on the pieces marked with the Raspberry Pi icon. These are our custom directives that we will define in the `CatFeederGadget` namespace.
 
-**NOTE**: *The complete code for this seciton is available in [t04glovern/alexa-gadget-cat-feeder/alexa-gadget-cat-feeder.py](../alexa-gadget-cat-feeder.py). Below are just the directives, therefore you will still need the full code in order for this to function.*
+**NOTE**: *The complete code for this section is available in [t04glovern/alexa-gadget-cat-feeder/alexa-gadget-cat-feeder.py](../alexa-gadget-cat-feeder.py). Below are just the directives, therefore you will still need the full code in order for this to function.*
 
 #### CatFeederGadget.Init
 
@@ -352,7 +352,7 @@ def on_custom_catfeedergadget_init(self, directive):
 
 The FeedCat directive is responsible for handling what should happen when a user wants to trigger the cat feeders primary function. This rotates a servo to an open position so that food can enter the cat dish.
 
-Finally we use an important feature of Gadgets called custom events. These are a way to craft events similar to what we receieve as a gadget on custom topics. In or case we want to be able to notify our Alexa sksill of the fact that the cat feeder was able to perform its servo action.
+Finally we use an important feature of Gadgets called custom events. These are a way to craft events similar to what we receive as a gadget on custom topics. In or case we want to be able to notify our Alexa skill of the fact that the cat feeder was able to perform its servo action.
 
 In the next section you will see the `CatFeederGadget.ReportFeeder` event be handled in our Alexa skill.
 
@@ -374,7 +374,7 @@ def on_custom_catfeedergadget_feedcat(self, directive):
 
 #### CatFeederGadget.Cleanup
 
-Finally we have a directive to reset the state of the cat feeder. This is purely a wrapper for the aformentioned `_reset_feeder()`.
+Finally we have a directive to reset the state of the cat feeder. This is purely a wrapper for the aforementioned `_reset_feeder()`.
 
 ```python
 def on_custom_catfeedergadget_cleanup(self, directive):
@@ -404,7 +404,7 @@ With the Gadget code deployed we are able to move onto the Alexa Skill portion o
 
 #### Launch Intent
 
-The code within the `Launch` intent is responsibile for checking if the incoming request has an Alexa device with a Gadget attached. If so it takes the endpoint identifier and stores it in the session attributes.
+The code within the `Launch` intent is responsible for checking if the incoming request has an Alexa device with a Gadget attached. If so it takes the endpoint identifier and stores it in the session attributes.
 
 Then we can see where we fire off our very first custom directive. These are the events that get captured and acted on by our Gadget from the previous section.
 
@@ -428,7 +428,7 @@ Then we can see where we fire off our very first custom directive. These are the
 ...
 ```
 
-Taking a quick look at the directive structure that is being send, you will see that it's very straighforward and follows a standard JSON format. The example below is from the [Init.js example in lambda/custom/directives](../skill/lambda/custom/directives/Init.js)
+Taking a quick look at the directive structure that is being send, you will see that it's very straightforward and follows a standard JSON format. The example below is from the [Init.js example in lambda/custom/directives](../skill/lambda/custom/directives/Init.js).
 
 ```javascript
 "use strict";
@@ -452,7 +452,7 @@ module.exports = {
 
 #### No Intent
 
-The `No` intent is very similar to the launch intent, however it calls the aformentioned Cleanup directive
+The `No` intent is very similar to the launch intent, however it calls the aforementioned Cleanup directive.
 
 ```javascript
 ...
@@ -469,7 +469,7 @@ The `No` intent is very similar to the launch intent, however it calls the aform
 
 The `Yes` intent is where things get interesting as we need to setup a listener to have Alexa wait for a reply from the feeder. The `StartEventHandlerDirective` is used for this and defines that ReportFeeder event that we used in our Gadget code as the source to listen to.
 
-A timeout and custom response in the event that the directive is no fullfilled must also be defined.
+A timeout and custom response in the event that the directive is no full-filled must also be defined.
 
 ```javascript
 ...
@@ -494,7 +494,7 @@ A timeout and custom response in the event that the directive is no fullfilled m
 
 #### ReportFeeder Intent
 
-While this is not necessarily an Intent, it is structured and caught in a similar manner to other intents in the Alexa Skill lifecycle. There's a few pieces to this intent that I'll break down individually
+While this is not necessarily an Intent, it is structured and caught in a similar manner to other intents in the Alexa Skill lifecycle. There's a few pieces to this intent that I'll break down individually.
 
 Since we don't want any random Intent to be triggering our ReportFeeder directive we extract the session attribute for the token provided in the `StartEventHandlerDirective` from the previous step. Thi ensure that only the Gadget that initialised the feeder will be able to close out the Gadget lifecycle.
 
@@ -538,7 +538,7 @@ The second half deals with the outcome from the `ReportFeeder` event. If you rec
 
 #### Other
 
-There are a number of other directives and intents not mentioned above due to time. The are summiarized below:
+There are a number of other directives and intents not mentioned above due to time. The are summarised below:
 
 * [StartEventHandler](../skill/lambda/custom/directives/StartEventHandler.js) - Definition for the timed event
 * [StopFeeder](../skill/lambda/custom/directives/StopFeeder.js) - Handles failures or stopped skill to disconnect from the Gadget
@@ -564,6 +564,6 @@ The final section is optional for anyone who actually wants to build the functio
 * 5v -> Servo-Red
 * GND -> Servo-Black
 
-Attaching the circuit to the cat feeder should be done properly, however I only had bluetac at the time of building so this is what I ended up with
+Attaching the circuit to the cat feeder should be done properly, however I only had blu tack at the time of building so this is what I ended up with
 
 ![Alexa Gadget Cat Feeder Proof of Concept](img/alexa-cat-feeder-poc.png)
