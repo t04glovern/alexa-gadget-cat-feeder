@@ -2,9 +2,11 @@
 
 When [Amazon Alexa](https://alexa.amazon.com) launched in 2014 as the first major home assistant platform I was captivated by the opportunities it offered someone like me. Clearly I wasn't alone either as over the coming years we saw a boom of new generation eletronics incorportating virtual assistants in their sales pitch.
 
-Now having voice assistant support is almost a must when launching any kind of home appliance, however this consumer demand is beginning to force hardware manufacurers to operate in a space that is very new and full of bad actors. Not all companies are technology first, so when their teams are asked to equip their white goods with internet capabilities there is a lot of room for error.
+Now having voice assistant support is almost a must when launching any kind of home appliance, however this consumer demand is beginning to force hardware manufacurers to operate in a space that is very new and full of bad actors. Not all companies are technology first, so when their teams are asked to equip their white goods with internet capabilities there is a lot of room for error. **This is why I believe Amazon Alexa Gadgets are a really big deal**.
 
-This is why I believe Amazon Alexa Gadgets are a really big deal.
+By the end of this article you will have everything you need to build your own gadget by using source code I've provided to build this simple Alexa powered cat feeder.
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Alexa cat feeder.<br><br>A prototype that really shouldn&#39;t exist, and yet here we are <a href="https://twitter.com/hashtag/alexa?src=hash&amp;ref_src=twsrc%5Etfw">#alexa</a> <a href="https://twitter.com/hashtag/aws?src=hash&amp;ref_src=twsrc%5Etfw">#aws</a> <a href="https://twitter.com/hashtag/awscloud?src=hash&amp;ref_src=twsrc%5Etfw">#awscloud</a> <a href="https://twitter.com/hashtag/catfeeder?src=hash&amp;ref_src=twsrc%5Etfw">#catfeeder</a> <a href="https://twitter.com/hashtag/iot?src=hash&amp;ref_src=twsrc%5Etfw">#iot</a> <a href="https://t.co/xHEp2lyfVC">pic.twitter.com/xHEp2lyfVC</a></p>&mdash; Nathan Glover (@nathangloverAUS) <a href="https://twitter.com/nathangloverAUS/status/1218760354181730304?ref_src=twsrc%5Etfw">January 19, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ---
 
@@ -548,6 +550,20 @@ There are a number of other directives and intents not mentioned above due to ti
 
 ---
 
-The final section is optional for anyone who actually wants to build the functioning feeder. The circuit diagram for the three main parts can be seen below, and you can assume resistors are 220Ω
+The final section is optional for anyone who actually wants to build the functioning feeder. The circuit diagram for the three main parts can be seen below, and you can assume resistors are 220Ω.
 
 ![Alexa Cat Feeder Schematic](img/alexa-cat-feeder-schematic.png)
+
+**Pinouts** can be seen below:
+
+* 3.3v -> RGB-LED-Pin-2
+* GPIO2 -> RGB-LED-Pin-1
+* GPIO3 -> RGB-LED-Pin-3
+* GPIO4 -> RGB-LED-Pin-4
+* GPIO14 -> Servo-Yellow
+* 5v -> Servo-Red
+* GND -> Servo-Black
+
+Attaching the circuit to the cat feeder should be done properly, however I only had bluetac at the time of building so this is what I ended up with
+
+![Alexa Gadget Cat Feeder Proof of Concept](img/alexa-cat-feeder-poc.png)
