@@ -34,7 +34,7 @@ Alexa Gadgets on the other-hand are meant as simple companions to exist Alexa de
 If the goal for your product is to simply give it Alexa support then the design above is both simpler and less prone to security holes.
 
 1. Device is paired with Echo (or any other Alexa bluetooth device).
-2. Device recieves events over Bluetooth messages when skills are invoked.
+2. Device receives events over Bluetooth messages when skills are invoked.
 3. Device can react & respond through the Alexa device.
 
 ---
@@ -66,7 +66,7 @@ So you want to learn how to build a gadget? Well hopefully I can help demystify 
 * *Optional*:
   * **3-wire servo**: To control cat feeder opening.
   * **RGB LED**: display status when skill is in use.
-  * **Assortment of wires**: to wire!
+  * **Assortment of wires**: too wire!
 
 **NOTE**: *While you might need to follow all steps to get a working cat feeder, they aren't necessary if you just want to learn. You can still setup a gadget (in our case a Raspberry Pi) to receive events from Alexa!*
 
