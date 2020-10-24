@@ -1,0 +1,36 @@
+{
+  "askcliStatesVersion": "2020-03-31",
+  "profiles": {
+    "default": {
+      "skillInfrastructure": {
+        "@ask-cli/cfn-deployer": {
+          "deployState": {
+            "default": {
+              "s3": {
+                "bucket": "ask-skill-default-useast1-1603513699867",
+                "key": "endpoint/build.zip"
+              },
+              "stackId": "arn:aws:cloudformation:us-east-1:277790246569:stack/ask-CatFeederGadget-default-skillStack-1603513279256/69ae4c70-15b0-11eb-80fe-12e727a79a85",
+              "outputs": [
+                {
+                  "OutputKey": "SkillEndpoint",
+                  "OutputValue": "arn:aws:lambda:us-east-1:277790246569:function:ask-CatFeederGadget-default-ski-AlexaSkillFunction-EA4R58S9UTI7",
+                  "Description": "LambdaARN for the regional endpoint"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "skillId": "amzn1.ask.skill.f66d48ea-6c88-4d64-8ecd-a2db548594e2",
+      "skillMetadata": {
+        "lastDeployHash": "nPrkr6FWS6mtLUWljkjjzL+1TvE="
+      },
+      "code": {
+        "default": {
+          "lastDeployHash": "lPuB7m2StqByzl8St+3k4J4inuA="
+        }
+      }
+    }
+  }
+}
