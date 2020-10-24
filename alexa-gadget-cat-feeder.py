@@ -61,7 +61,6 @@ class CatFeederGadget(AlexaGadget):
         else:
             # PWM Signal to close the servo
             SERVO.ChangeDutyCycle(15)
-        time.sleep(0.25)
 
 if __name__ == '__main__':
     try:
