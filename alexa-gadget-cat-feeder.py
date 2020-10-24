@@ -43,21 +43,29 @@ class CatFeederGadget(AlexaGadget):
         """
         Handles Custom.CatFeederGadget.FeedCat directive sent from skill
         """
-        SERVO.start(0)
-        SERVO.ChangeDutyCycle(30)
-        time.sleep(0.5)
+        self._open_feeder(open_feeder=True)
 
+        # Sending the "feed" status back to the Alexa skill
         payload = {'feed': True}
         self.send_custom_event(
             'Custom.CatFeederGadget', 'ReportFeeder', payload)
 
     def _reset_feeder(self):
+        self._open_feeder(open_feeder=False)
+
+    def _open_feeder(self, open_feeder):
         SERVO.start(0)
-        SERVO.ChangeDutyCycle(15)
-        time.sleep(0.5)
+        if open_feeder:
+            # PWM Signal to open the servo
+            SERVO.ChangeDutyCycle(30)
+        else:
+            # PWM Signal to close the servo
+            SERVO.ChangeDutyCycle(15)
+        time.sleep(0.25)
 
 if __name__ == '__main__':
     try:
         CatFeederGadget().main()
     finally:
         logger.debug('Cleaning up')
+        IO.cleanup()
